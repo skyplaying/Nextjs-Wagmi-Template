@@ -12,9 +12,14 @@
     "fmt": "prettier --write ."
   },
   "dependencies": {
+    "@reown/appkit": "^1.7.5",
+    "@reown/appkit-adapter-wagmi": "^1.7.5",
+    "@tanstack/react-query": "^5.76.1",
     "next": "15.3.2",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "viem": "^2.29.4",
+    "wagmi": "^2.15.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -30,5 +35,6 @@
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "pnpm@9.15.2"
 }
