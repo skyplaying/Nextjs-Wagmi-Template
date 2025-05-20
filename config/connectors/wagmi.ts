@@ -1,25 +1,33 @@
-import { cookieStorage, createStorage } from "wagmi";
-import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
-import { sepolia } from "@reown/appkit/networks";
-import type { AppKitNetwork } from "@reown/appkit/networks";
+import { getDefaultConfig, WalletList } from "@rainbow-me/rainbowkit";
+import { http } from "wagmi";
+import {  mainnet, sepolia } from "wagmi/chains";
+import { metaMaskWallet, okxWallet } from "@rainbow-me/rainbowkit/wallets";
 
-// Get projectId from https://cloud.reown.com
-export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 
-if (!projectId) {
-  throw new Error("Project ID is not defined");
+const wallets: WalletList = [
+  {
+    groupName: "Wallets",
+    wallets: [okxWallet, metaMaskWallet],
+  },
+]
+const chains = [mainnet, sepolia] as const;
+
+const metadata = {
+  name: "Nextjs Wagmi Quickstart",
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID || "",
 }
-
-export const networks = [sepolia] as [AppKitNetwork, ...AppKitNetwork[]];
-export const defaultNetwork = networks[0];
-//Set up the Wagmi Adapter (Config)
-export const wagmiAdapter = new WagmiAdapter({
-  storage: createStorage({
-    storage: cookieStorage,
-  }),
-  ssr: true,
-  projectId,
-  networks,
+const config = getDefaultConfig({
+    appName: metadata.name,
+    projectId: metadata.projectId,
+    chains,
+    transports: {
+        [chains[0].id]: http(),
+        [chains[1].id]: http(),
+    },
+    ssr: true,
+    wallets,
 });
 
-export const config = wagmiAdapter.wagmiConfig;
+export const wagmiConfig = config;
+
+export const defaultNetwork = chains[1];

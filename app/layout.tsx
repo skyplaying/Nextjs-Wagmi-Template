@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Provider } from "./Provider";
-import { headers } from "next/headers";
+import Provider from "./Provider";
 export const metadata: Metadata = {
   title: "Next.js Wagmi Quickstart",
-  description: "Quickstart for Next.js, Wagmi and Reown AppKit",
+  description: "Quickstart for Next.js, Wagmi and RainbowKit",
 };
 
 export default function RootLayout({
@@ -22,7 +21,5 @@ export default function RootLayout({
 }
 
 export async function BaseLayout({ children }: { children: React.ReactNode }) {
-  const headersObj = await headers();
-  const cookies = headersObj.get("cookie");
-  return <Provider cookies={cookies}>{children}</Provider>;
+  return <Provider>{children}</Provider>;
 }

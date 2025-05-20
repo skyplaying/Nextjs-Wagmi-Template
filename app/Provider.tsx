@@ -1,29 +1,28 @@
 "use client";
+
+import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
-import { wagmiAdapter } from "@/config/connectors";
-import type { ReactNode } from "react";
+import { RainbowKitProvider, lightTheme } from "@rainbow-me/rainbowkit";
+import {wagmiConfig, defaultNetwork} from "@/config";
 
-const queryClient = new QueryClient();
+interface ProviderProps {
+    children: React.ReactNode;
+}
 
-export function Provider({
-  children,
-  cookies,
-}: {
-  children: ReactNode;
-  cookies: string | null;
-}) {
-  const initialState = cookieToInitialState(
-    wagmiAdapter.wagmiConfig as Config,
-    cookies,
-  );
+export default function Provider({ children }: ProviderProps) {
+    const queryClient = new QueryClient();
 
-  return (
-    <WagmiProvider
-      config={wagmiAdapter.wagmiConfig as Config}
-      initialState={initialState}
-    >
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </WagmiProvider>
-  );
+    return (
+        <QueryClientProvider client={queryClient}>
+            <WagmiProvider config={wagmiConfig}>
+                <RainbowKitProvider
+                    theme={lightTheme()}
+                    modalSize="compact"
+                    initialChain={defaultNetwork}
+                >
+                    {children}
+                </RainbowKitProvider>
+            </WagmiProvider>
+        </QueryClientProvider>
+    );
 }

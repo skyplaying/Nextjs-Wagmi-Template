@@ -1,11 +1,9 @@
 "use client";
-
-import { AppKit } from "@/config/connectors/appkitModal";
-
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 export default function Home() {
-  return (
-    <div>
-      <button onClick={() => AppKit.open()}>Open Modal</button>
-    </div>
-  );
-}
+    return (
+        <>
+            <ConnectButton />
+        </>
+    );
+};
