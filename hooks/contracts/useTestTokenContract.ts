@@ -78,12 +78,15 @@ export const useMintTestToken = () => {
     data: hash,
     isPending,
     writeContractAsync,
-    error,
+    error: executionError,
   } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: callError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
   const write = async (address: Address, amount: bigint) => {
     return await writeContractAsync({
       ...contract,
@@ -95,8 +98,9 @@ export const useMintTestToken = () => {
     isPending,
     hash,
     writeContract: write,
-    error,
+    executionError,
     isConfirming,
     isConfirmed,
+    callError,
   };
 };

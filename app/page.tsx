@@ -16,9 +16,10 @@ export default function Home() {
     isPending,
     hash,
     writeContract: mintTestToken,
-    error,
+    executionError,
     isConfirming,
     isConfirmed,
+    callError,
   } = useMintTestToken();
 
   const handleMint = () => {
@@ -60,8 +61,9 @@ export default function Home() {
       <button onClick={handleMint}>{isPending ? "Minting..." : "Mint"}</button>
       {isConfirming && <p>Confirming...</p>}
       {isConfirmed && <p>Confirmed</p>}
-      {error && <p>Error: {error.message}</p>}
+      {executionError && <p>Execution Error: {executionError.message}</p>}
       {hash && <p>Hash: {hash}</p>}
+      {callError && <p>Call Error: {callError.message}</p>}
     </div>
   );
 }

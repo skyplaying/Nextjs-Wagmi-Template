@@ -8,7 +8,6 @@ contract MyToken is ERC20, ERC20Burnable {
     constructor() 
         ERC20("MyToken", "MTK") 
     {
-        _mint(msg.sender, 10_000_000 * 10 ** decimals());
     }
 
     function mint(address to, uint256 amount) public {
