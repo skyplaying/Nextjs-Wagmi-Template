@@ -10,6 +10,8 @@ A quick start template integrating Next.js with Wagmi for developing Web3 applic
 
 ## Getting Started and Running locally
 
+Set `NEXT_PUBLIC_PROJECT_ID` in your `.env.local` file. This is a WalletConnect Project ID which you can obtain from [WalletConnect Cloud](https://cloud.reown.com/app).
+
 ```bash
 pnpm install
 pnpm dev
