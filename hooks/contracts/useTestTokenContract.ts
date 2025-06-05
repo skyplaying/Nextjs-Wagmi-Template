@@ -16,7 +16,7 @@ export const useReadTestTokenContract = (address?: Address) => {
     {
       ...contract,
       functionName: "balanceOf",
-      args: [],
+      args: [address],
     },
     {
       ...contract,
