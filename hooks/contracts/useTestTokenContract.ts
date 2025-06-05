@@ -16,7 +16,7 @@ export const useReadTestTokenContract = (address?: Address) => {
     {
       ...contract,
       functionName: "balanceOf",
-      args: [address],
+      args: [],
     },
     {
       ...contract,
@@ -36,7 +36,7 @@ export const useReadTestTokenContract = (address?: Address) => {
     },
   ];
 
-  const { data, isLoading, isError, refetch } = useReadContracts({
+  const { data, error, isLoading, isError, refetch } = useReadContracts({
     contracts: contracts.map((contract) => ({
       ...contract,
       abi: contract.abi as Abi,
@@ -61,10 +61,9 @@ export const useReadTestTokenContract = (address?: Address) => {
     symbol,
     totalSupply,
   };
-  console.log(res);
-
   return {
     data: res,
+    error,
     isLoading,
     isError,
     refetch,
@@ -86,16 +85,11 @@ export const useMintTestToken = () => {
       hash,
     });
   const write = async (address: Address, amount: bigint) => {
-    try {
-      return await writeContractAsync({
-        ...contract,
-        functionName: "mint",
-        args: [address, amount],
-      });
-    } catch (err) {
-      console.log("Error in mint:", err);
-      // throw err;
-    }
+    return await writeContractAsync({
+      ...contract,
+      functionName: "mint",
+      args: [address, amount],
+    });
   };
   return {
     isPending,

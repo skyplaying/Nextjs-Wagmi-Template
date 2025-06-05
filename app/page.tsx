@@ -12,7 +12,6 @@ export default function Home() {
     isError,
     refetch: refetchTestToken,
   } = useReadTestTokenContract(address);
-  console.log(data);
   const {
     isPending,
     hash,
