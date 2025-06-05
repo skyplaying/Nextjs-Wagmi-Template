@@ -6,5 +6,7 @@ export const ContractAddresses: Record<
 > = {
   TestToken: {
     [sepolia.id]: "0x59Cc3D82cfaEEe271E32Fbe812a103437DD91132",
+    // add more chains
+    // [mainnet.id]: "0x59Cc3D82cfaEEe271E32Fbe812a103437DD91132",
   },
 } as const;
