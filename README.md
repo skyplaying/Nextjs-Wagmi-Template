@@ -7,12 +7,14 @@ A quick start template integrating Next.js with Wagmi for developing Web3 applic
 - ✅ Next.js 14
 - ✅ Wagmi v2
 - ✅ RainbowKit
+- ✅ Viem
 
 ## Getting Started and Running locally
 
 Set `NEXT_PUBLIC_PROJECT_ID` in your `.env.local` file. This is a WalletConnect Project ID which you can obtain from [WalletConnect Cloud](https://cloud.reown.com/app).
 
 ```bash
+echo "NEXT_PUBLIC_PROJECT_ID=your_project_id_here" > .env.local
 pnpm install
 pnpm dev
 ```
@@ -114,39 +116,64 @@ Used for minting TestToken tokens and handling transaction states (pending, conf
 export const useMintTestToken = () => {
   const chainId = useChainId();
   const contract = getTestTokenContract(chainId);
+
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const {
     data: hash,
     isPending,
+    error: excuteError,
+    isError: isExcuteError,
     writeContractAsync,
-    error,
   } = useWriteContract();
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
-  const write = async (address: Address, amount: bigint) => {
-    return await writeContractAsync({
+  const {
+    isLoading: isConfirming,
+    error: callError,
+    isError: isCallError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const writeContract = async (address: Address, amount: bigint) => {
+    setIsConfirmed(false);
+    const hash = await writeContractAsync({
       ...contract,
       functionName: "mint",
       args: [address, amount],
     });
+    const { receipt, isConfirmed } = await waitForTransactionReceipt(hash);
+    return {
+      receipt,
+      isConfirmed,
+    };
   };
+
+  const error = callError || excuteError;
   return {
-    isPending,
-    hash,
-    writeContract: write,
-    error,
-    isConfirming,
     isConfirmed,
+    writeContract,
+    isPending: isConfirming || isPending,
+    hash,
+    errorMessage:
+      (error as BaseError)?.shortMessage || error?.message || "Unknown error",
+    isError: isCallError || isExcuteError,
   };
 };
 
-// Usage
-const { isPending, hash, writeContract, error, isConfirming, isConfirmed } =
-  useMintTestToken();
-await writeContract(address, BigInt(1000));
+const handleMint = async () => {
+  const { receipt, isConfirmed } = await mintTestToken(address, BigInt(1000));
+  if (isConfirmed) {
+    console.log("mint success", receipt);
+    refetchTestToken();
+  }
+};
 ```
 
+// Usage
+const { isPending, hash, writeContract, error, isConfirming, isConfirmed } =
+useMintTestToken();
+await writeContract(address, BigInt(1000));
+
+```
 ## Adding New Functionality
 
 1. Add contract ABI in `config/contracts/abi/`
@@ -154,3 +181,4 @@ await writeContract(address, BigInt(1000));
 3. Add address getter function in `utils/addressHelpers.ts`
 4. Add contract getter function in `utils/contractHelpers.ts`
 5. Create custom hook in `hooks/contracts/`
+```
