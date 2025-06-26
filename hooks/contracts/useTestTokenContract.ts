@@ -6,9 +6,9 @@ import {
 } from "wagmi";
 import { getTestTokenContract } from "@/utils/contractHelpers";
 import { Abi, Address, BaseError } from "viem";
-import { waitForTransactionReceipt } from "wagmi/actions";
-import { wagmiConfig } from "@/config";
+import { waitForTransactionReceipt } from "@/utils";
 import { useState } from "react";
+
 // read example
 export const useReadTestTokenContract = (address?: Address) => {
   const chainId = useChainId();
@@ -101,22 +101,11 @@ export const useMintTestToken = () => {
       functionName: "mint",
       args: [address, amount],
     });
-    const receipt = await waitForTransactionReceipt(wagmiConfig, {
-      hash,
-    });
-    if (receipt.status === "success") {
-      setIsConfirmed(true);
-      return {
-        receipt,
-        isConfirmed,
-      };
-    } else {
-      setIsConfirmed(false);
-      return {
-        receipt: null,
-        isConfirmed,
-      };
-    }
+    const { receipt, isConfirmed } = await waitForTransactionReceipt(hash);
+    return {
+      receipt,
+      isConfirmed,
+    };
   };
 
   const error = callError || excuteError;
