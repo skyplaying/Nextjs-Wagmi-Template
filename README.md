@@ -7,7 +7,6 @@ A quick start template integrating Next.js with Wagmi for developing Web3 applic
 - ✅ Next.js 14
 - ✅ Wagmi v2
 - ✅ RainbowKit
-- ✅ Viem
 
 ## Getting Started and Running locally
 
@@ -159,6 +158,7 @@ export const useMintTestToken = () => {
   };
 };
 
+// Usage in components
 const handleMint = async () => {
   const { receipt, isConfirmed } = await mintTestToken(address, BigInt(1000));
   if (isConfirmed) {
@@ -167,11 +167,6 @@ const handleMint = async () => {
   }
 };
 ```
-
-// Usage
-const { isPending, hash, writeContract, error, isConfirming, isConfirmed } =
-useMintTestToken();
-await writeContract(address, BigInt(1000));
 
 ```
 ## Adding New Functionality
