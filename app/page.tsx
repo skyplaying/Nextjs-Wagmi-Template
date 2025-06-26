@@ -3,36 +3,31 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useReadTestTokenContract } from "@/hooks/contracts/useTestTokenContract";
 import { useAccount } from "wagmi";
 import { useMintTestToken } from "@/hooks/contracts/useTestTokenContract";
-import { useEffect } from "react";
 
 export default function Home() {
   const { address } = useAccount();
   const {
     data,
     isLoading,
-    isError,
     refetch: refetchTestToken,
   } = useReadTestTokenContract(address);
   const {
-    isPending,
     hash,
     writeContract: mintTestToken,
-    executionError,
-    isConfirming,
+    isPending,
     isConfirmed,
-    callError,
+    errorMessage,
+    isError,
   } = useMintTestToken();
 
-  const handleMint = () => {
+  const handleMint = async () => {
     if (!address) return;
-    mintTestToken(address, BigInt(1000));
-  };
-
-  useEffect(() => {
+    const { receipt, isConfirmed } = await mintTestToken(address, BigInt(1000));
     if (isConfirmed) {
+      console.log("mint success", receipt);
       refetchTestToken();
     }
-  }, [isConfirmed, refetchTestToken]);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -80,17 +75,12 @@ export default function Home() {
         </div>
 
         <div className="mt-4 text-center">
-          {isConfirming && <p className="text-yellow-500">Confirming...</p>}
+          {isPending && <p className="text-yellow-500">Confirming...</p>}
           {isConfirmed && <p className="text-green-500">Confirmed</p>}
-          {executionError && (
-            <p className="text-red-500">
-              Execution Error: {executionError.message}
-            </p>
+          {isError && (
+            <p className="text-red-500">Execution Error: {errorMessage}</p>
           )}
           {hash && <p className="break-all text-sm mt-2">Hash: {hash}</p>}
-          {callError && (
-            <p className="text-red-500">Call Error: {callError.message}</p>
-          )}
         </div>
       </div>
     </div>

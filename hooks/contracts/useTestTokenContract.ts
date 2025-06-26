@@ -5,11 +5,14 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { getTestTokenContract } from "@/utils/contractHelpers";
-import { Abi, Address } from "viem";
-
+import { Abi, Address, BaseError } from "viem";
+import { waitForTransactionReceipt } from "wagmi/actions";
+import { wagmiConfig } from "@/config";
+import { useState } from "react";
 // read example
 export const useReadTestTokenContract = (address?: Address) => {
   const chainId = useChainId();
+
   const contract = getTestTokenContract(chainId);
 
   const contracts = [
@@ -74,33 +77,56 @@ export const useReadTestTokenContract = (address?: Address) => {
 export const useMintTestToken = () => {
   const chainId = useChainId();
   const contract = getTestTokenContract(chainId);
+
+  const [isConfirmed, setIsConfirmed] = useState(false);
   const {
     data: hash,
     isPending,
+    error: excuteError,
+    isError: isExcuteError,
     writeContractAsync,
-    error: executionError,
   } = useWriteContract();
   const {
     isLoading: isConfirming,
-    isSuccess: isConfirmed,
     error: callError,
+    isError: isCallError,
   } = useWaitForTransactionReceipt({
     hash,
   });
-  const write = async (address: Address, amount: bigint) => {
-    return await writeContractAsync({
+
+  const writeContract = async (address: Address, amount: bigint) => {
+    setIsConfirmed(false);
+    const hash = await writeContractAsync({
       ...contract,
       functionName: "mint",
       args: [address, amount],
     });
+    const receipt = await waitForTransactionReceipt(wagmiConfig, {
+      hash,
+    });
+    if (receipt.status === "success") {
+      setIsConfirmed(true);
+      return {
+        receipt,
+        isConfirmed,
+      };
+    } else {
+      setIsConfirmed(false);
+      return {
+        receipt: null,
+        isConfirmed,
+      };
+    }
   };
+
+  const error = callError || excuteError;
   return {
-    isPending,
-    hash,
-    writeContract: write,
-    executionError,
-    isConfirming,
     isConfirmed,
-    callError,
+    writeContract,
+    isPending: isConfirming || isPending,
+    hash,
+    errorMessage:
+      (error as BaseError)?.shortMessage || error?.message || "Unknown error",
+    isError: isCallError || isExcuteError,
   };
 };
